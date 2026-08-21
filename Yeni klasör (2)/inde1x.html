@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- PWA & Web App Ayarları -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff9800">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Nöbetçi Kurye">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2830/2830312.png">
+
+    <title>Nöbetçi Kurye | Anadolu Yakası Gece Kuryesi</title>
+    
+    <!-- Leaflet Harita CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <style>
+        :root {
+            --bg-color: #0f1012;
+            --text-color: #f5f5f5;
+            --primary-color: #ff9800;
+            --primary-hover: #f57c00;
+            --secondary-bg: #18191c;
+            --card-bg: #212226;
+            --whatsapp-green: #25D366;
+            --phone-blue: #2196F3;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* HERO BÖLÜMÜ */
+        .hero {
+            position: relative;
+            min-height: 86vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px 20px 20px;
+            background: linear-gradient(rgba(15, 16, 18, 0.72), rgba(15, 16, 18, 0.88)), 
+                        url('https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+            border-bottom: 2px solid rgba(255, 152, 0, 0.3);
+        }
+
+        .badge-guarantee {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background-color: rgba(255, 152, 0, 0.15);
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            line-height: 1.25;
+            margin-bottom: 12px;
+            max-width: 700px;
+        }
+
+        h1 span {
+            color: var(--primary-color);
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            margin-bottom: 22px;
+            color: #d1d5db;
+            max-width: 580px;
+        }
+
+        /* Hizmet Tanım Rozetleri */
+        .hero-features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            max-width: 650px;
+        }
+
+        .hero-feature-item {
+            background-color: rgba(33, 34, 38, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(4px);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            color: #e0e0e0;
+        }
+
+        /* Aksiyon Butonları */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+            max-width: 440px;
+            justify-content: center;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 20px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-decoration: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+            flex: 1;
+            border: none;
+            color: #fff;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-whatsapp {
+            background-color: var(--whatsapp-green);
+        }
+
+        .btn-call {
+            background-color: var(--phone-blue);
+        }
+
+        /* Aşağı Kaydır İpucu */
+        .scroll-indicator {
+            margin-top: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: #aaa;
+            font-size: 0.8rem;
+            animation: bounce 2s infinite;
+            cursor: pointer;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(6px); }
+            60% { transform: translateY(3px); }
+        }
+
+        /* SAYFA İÇERİK YAPISI */
+        .container {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 30px 16px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #a0a0a0;
+            margin-bottom: 20px;
+        }
+
+        /* HESAPLAMA & HARİTA */
+        .pricing-box {
+            background-color: var(--secondary-bg);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            margin-bottom: 40px;
+        }
+
+        #map {
+            height: 280px;
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid #333;
+            margin-bottom: 15px;
+        }
+
+        #price-result {
+            font-size: 0.95rem;
+            background-color: #0b0c0e;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 4px solid var(--primary-color);
+            text-align: center;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .pricing-notice {
+            font-size: 0.78rem;
+            color: #aaa;
+            background-color: rgba(255, 152, 0, 0.06);
+            border: 1px dashed rgba(255, 152, 0, 0.35);
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        /* GOOGLE YORUMLAR BÖLÜMÜ */
+        .reviews-section {
+            margin-bottom: 40px;
+        }
+
+        .google-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background-color: var(--secondary-bg);
+            padding: 14px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .google-header .score {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .stars {
+            color: #ffb400;
+            letter-spacing: 2px;
+        }
+
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+        }
+
+        .review-card {
+            background-color: var(--card-bg);
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .review-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .reviewer-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            background-color: #3f424b;
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .reviewer-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .review-date {
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        .review-text {
+            font-size: 0.85rem;
+            color: #ddd;
+            line-height: 1.4;
+        }
+
+        /* FOOTER */
+        footer {
+            background-color: #070708;
+            text-align: center;
+            padding: 35px 20px 25px;
+            border-top: 1px solid #1f2024;
+        }
+
+        .corporate-mail {
+            display: inline-block;
+            margin-top: 6px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* GİRİŞTE ÇIKAN PWA PROMPT BARI */
+        .pwa-toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(150%);
+            background-color: var(--secondary-bg);
+            border: 1px solid var(--primary-color);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            padding: 16px;
+            border-radius: 10px;
+            width: calc(100% - 32px);
+            max-width: 420px;
+            z-index: 10000;
+            transition: transform 0.4s ease-out;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .pwa-toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .pwa-toast-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .pwa-toast-text h4 {
+            font-size: 0.95rem;
+            color: var(--primary-color);
+            margin-bottom: 2px;
+        }
+
+        .pwa-toast-text p {
+            font-size: 0.8rem;
+            color: #ccc;
+        }
+
+        .pwa-toast-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-pwa-action {
+            flex: 1;
+            padding: 8px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-pwa-install {
+            background-color: var(--primary-color);
+            color: #000;
+        }
+
+        .btn-pwa-dismiss {
+            background-color: #333;
+            color: #fff;
+        }
+
+        @media (min-width: 769px) {
+            h1 { font-size: 3rem; }
+            #map { height: 400px; }
+            .reviews-grid { grid-template-columns: repeat(3, 1fr); }
+            .action-buttons { max-width: 480px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hero Bölümü -->
+    <header class="hero">
+        <div class="badge-guarantee">
+            ⚡ Anadolu Yakası İçi En Geç 90 Dakikada Teslimat
+        </div>
+        
+        <h1>Anadolu Yakası <span>Nöbetçi Gece Kuryesi</span></h1>
+        
+        <p class="subtitle">
+            Gece saatlerinde acil evrak, medikal malzeme, anahtar ve paketleriniz beklemeden, güvenle adresine ulaşır.
+        </p>
+
+        <!-- Akıcı şekilde entegre edilmiş iş tanımları -->
+        <div class="hero-features">
+            <div class="hero-feature-item">📍 Tüm Anadolu Yakası Rotası</div>
+            <div class="hero-feature-item">🛡️ Doğrudan & Güvenli Teslimat</div>
+            <div class="hero-feature-item">📏 Şeffaf Mesafe Tarifesi</div>
+        </div>
+
+        <div class="action-buttons">
+            <a href="https://wa.me/905457692709" target="_blank" rel="noopener noreferrer" class="btn btn-whatsapp">
+                💬 WhatsApp ile Çağır
+            </a>
+            <a href="tel:+905457692709" class="btn btn-call">
+                📞 Hemen Ara
+            </a>
+        </div>
+
+        <div class="scroll-indicator" onclick="scrollToMap()">
+            <span>Fiyat Hesaplama & Harita</span>
+            ▼
+        </div>
+    </header>
+
+    <div class="container" id="calculator-section">
+        
+        <!-- Harita ve Hesaplama Bölümü -->
+        <section class="pricing-box">
+            <h2 class="section-title">Canlı Gece Tarifesi Hesaplama</h2>
+            <p class="section-subtitle">Harita üzerinden sırasıyla <strong>alım noktanızı</strong> ve <strong>teslimat noktanızı</strong> tıklayarak seçin.</p>
+            
+            <div id="map"></div>
+            
+            <div id="price-result">
+                Hesaplama için lütfen haritadan iki nokta seçin.
+            </div>
+
+            <div class="pricing-notice">
+                ⚠️ <strong>Bilgilendirme:</strong> Hesaplanan tutarlar tahmini gece tarifesidir. Rota koşullarına ve köprü/geçiş durumlarına göre değişkenlik gösterebilir. Net tutar için lütfen iletişime geçin.
+            </div>
+        </section>
+
+        <!-- Google Yorumları Sekmesi -->
+        <section class="reviews-section">
+            <h2 class="section-title">Müşteri Deneyimleri</h2>
+            <p class="section-subtitle">Gece operasyonlarımızdan yararlanan müşterilerimizin değerlendirmeleri</p>
+            
+            <div class="google-header">
+                <span class="score">5.0</span>
+                <span class="stars">★★★★★</span>
+                <span style="font-size: 0.85rem; color: #aaa;">(Google Yorumları)</span>
+            </div>
+
+            <div class="reviews-grid">
+                <div class="review-card">
+                    <div class="review-top">
+                        <div class="reviewer-info">
+                            <div class="avatar">E</div>
+                            <span class="reviewer-name">Emre T.</span>
+                        </div>
+                        <span class="review-date">3 gün önce</span>
+                    </div>
+                    <div class="stars" style="font-size: 0.8rem; margin-bottom: 6px;">★★★★★</div>
+                    <p class="review-text">Gece saat 02:30'da acil şirket evrakı için ulaştım. Kadıköy'den Pendik'e 45 dakikada teslim etti. İletişim ve hız mükemmel.</p>
+                </div>
+
+                <div class="review-card">
+                    <div class="review-top">
+                        <div class="reviewer-info">
+                            <div class="avatar">S</div>
+                            <span class="reviewer-name">Selin K.</span>
+                        </div>
+                        <span class="review-date">1 hafta önce</span>
+                    </div>
+                    <div class="stars" style="font-size: 0.8rem; margin-bottom: 6px;">★★★★★</div>
+                    <p class="review-text">Nöbetçi eczaneden acil ilaç temini için yardımcı oldu. Hem çok saygılı hem de çok hızlıydı. Güvenle arayabilirsiniz.</p>
+                </div>
+
+                <div class="review-card">
+                    <div class="review-top">
+                        <div class="reviewer-info">
+                            <div class="avatar">B</div>
+                            <span class="reviewer-name">Burak A.</span>
+                        </div>
+                        <span class="review-date">2 hafta önce</span>
+                    </div>
+                    <div class="stars" style="font-size: 0.8rem; margin-bottom: 6px;">★★★★★</div>
+                    <p class="review-text">Yedek anahtarımı unuttuğumda kurtarıcı oldu. Fiyatlandırma baştan konuşulduğu gibi şeffaf ve netti. Kesinlikle tavsiye ederim.</p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div>
+            <strong style="font-size: 1.15rem; color: #fff;">İlyas Kaan Akbaş</strong><br>
+            <span style="color: #aaa; font-size: 0.9rem;">Nöbetçi Kurye Operasyonu • İstanbul Anadolu Yakası</span>
+        </div>
+        <div style="margin-top: 12px;">
+            <span style="color: #888; font-size: 0.85rem;">Kurumsal & Toplu Gönderi İletişimi:</span><br>
+            <a href="mailto:ilyas.akbas.ulas@proton.me" class="corporate-mail">ilyas.akbas.ulas@proton.me</a>
+        </div>
+        <p style="color: #555; margin-top: 20px; font-size: 0.8rem;">&copy; 2026 Nöbetçi Kurye. Tüm Hakları Saklıdır.</p>
+    </footer>
+
+    <!-- Girişte Açılan PWA Toast Bildirimi -->
+    <div id="pwaToast" class="pwa-toast">
+        <div class="pwa-toast-content">
+            <div style="font-size: 1.6rem;">📱</div>
+            <div class="pwa-toast-text">
+                <h4>Hızlı Erişim İster misiniz?</h4>
+                <p id="pwaToastMsg">Gece acil kurye ihtiyacınızda tek tıkla ulaşmak için uygulamayı ana ekranınıza ekleyin.</p>
+            </div>
+        </div>
+        <div class="pwa-toast-buttons">
+            <button type="button" id="btnPwaConfirm" class="btn-pwa-action btn-pwa-install" onclick="installPWA()">Ana Ekrana Ekle</button>
+            <button type="button" class="btn-pwa-action btn-pwa-dismiss" onclick="dismissPWA()">Daha Sonra</button>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(() => {});
+            });
+        }
+
+        function scrollToMap() {
+            document.getElementById('calculator-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // PWA GİRİŞTE TETİKLEME KONTROLÜ
+        let deferredPrompt = null;
+        const toast = document.getElementById('pwaToast');
+
+        function isIosDevice() {
+            return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        }
+
+        function isStandalone() {
+            return (window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone === true);
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            triggerPWAToast();
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // Zaten kuruluysa veya son 24 saatte reddedildiyse sorma
+            const dismissed = localStorage.getItem('pwa_prompt_dismissed');
+            if (isStandalone() || dismissed) return;
+
+            if (isIosDevice()) {
+                setTimeout(() => {
+                    document.getElementById('pwaToastMsg').innerHTML = 'Alttaki <strong>"Paylaş"</strong> ikonuna tıklayıp <strong>"Ana Ekrana Ekle"</strong>yi seçebilirsiniz.';
+                    document.getElementById('btnPwaConfirm').style.display = 'none';
+                    toast.classList.add('show');
+                }, 2000);
+            }
+        });
+
+        function triggerPWAToast() {
+            const dismissed = localStorage.getItem('pwa_prompt_dismissed');
+            if (!isStandalone() && !dismissed) {
+                setTimeout(() => {
+                    toast.classList.add('show');
+                }, 1800);
+            }
+        }
+
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.finally(() => {
+                    deferredPrompt = null;
+                    toast.classList.remove('show');
+                });
+            } else {
+                toast.classList.remove('show');
+            }
+        }
+
+        function dismissPWA() {
+            toast.classList.remove('show');
+            // Kullanıcıyı sürekli darlamamak için tercihi sakla
+            localStorage.setItem('pwa_prompt_dismissed', 'true');
+        }
+
+        // HARİTA YÖNETİMİ
+        const map = L.map('map').setView([40.9950, 29.1150], 11);
+        
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap &copy; CARTO',
+            subdomains: 'abcd',
+            maxZoom: 19
+        }).addTo(map);
+
+        let originMarker = null;
+        let destMarker = null;
+
+        const BAZ_FIYAT = 350;
+        const DAHIL_KM = 10;
+        const EKSTRA_KM_UCRETI = 35;
+
+        map.on('click', function(e) {
+            if (!originMarker) {
+                originMarker = L.marker(e.latlng).addTo(map).bindPopup("Alım Noktası").openPopup();
+                setResultText("Şimdi teslimat noktasını seçin.");
+            } else if (!destMarker) {
+                destMarker = L.marker(e.latlng).addTo(map).bindPopup("Teslimat Noktası").openPopup();
+                calculatePrice(originMarker.getLatLng(), destMarker.getLatLng());
+            } else {
+                map.removeLayer(originMarker);
+                map.removeLayer(destMarker);
+                originMarker = L.marker(e.latlng).addTo(map).bindPopup("Alım Noktası").openPopup();
+                destMarker = null;
+                setResultText("Şimdi teslimat noktasını seçin.");
+            }
+        });
+
+        function calculatePrice(start, end) {
+            setResultText("Mesafe ve rota hesaplanıyor...");
+            
+            const sLat = encodeURIComponent(Number(start.lat).toFixed(6));
+            const sLng = encodeURIComponent(Number(start.lng).toFixed(6));
+            const eLat = encodeURIComponent(Number(end.lat).toFixed(6));
+            const eLng = encodeURIComponent(Number(end.lng).toFixed(6));
+
+            const url = `https://router.project-osrm.org/route/v1/driving/${sLng},${sLat};${eLng},${eLat}?overview=false`;
+            
+            fetch(url)
+            .then(res => {
+                if (!res.ok) throw new Error('Ağ hatası');
+                return res.json();
+            })
+            .then(data => {
+                if(data.routes && data.routes.length > 0 && typeof data.routes[0].distance === 'number') {
+                    const distanceKm = parseFloat((data.routes[0].distance / 1000).toFixed(1));
+                    const price = computeTariff(distanceKm);
+                    renderResult(distanceKm, price);
+                } else {
+                    setResultText("Rota bulunamadı, lütfen tekrar deneyin.");
+                }
+            })
+            .catch(() => {
+                const dist = (map.distance(start, end) / 1000) * 1.3;
+                const distKm = parseFloat(dist.toFixed(1));
+                renderResult(distKm, computeTariff(distKm));
+            });
+        }
+
+        function computeTariff(km) {
+            if (km <= DAHIL_KM) return BAZ_FIYAT;
+            return Math.round(BAZ_FIYAT + ((km - DAHIL_KM) * EKSTRA_KM_UCRETI));
+        }
+
+        function setResultText(msg) {
+            const el = document.getElementById('price-result');
+            el.textContent = msg;
+        }
+
+        function renderResult(km, price) {
+            const el = document.getElementById('price-result');
+            el.innerHTML = `
+                <div style="font-weight: 600; color: var(--primary-color); margin-bottom: 4px;">Hesaplanan Tahmini Rota</div>
+                <div>Yol Mesafesi: <strong>${km} km</strong> | Ortalama Teslimat Süresi: <strong>45-90 Dk</strong></div>
+                <div style="font-size: 1.15rem; color: #fff; margin-top: 4px;">Tahmini Tutar: <strong style="color: var(--primary-color);">${price} ₺</strong></div>
+            `;
+        }
+    </script>
+</body>
+</html>
