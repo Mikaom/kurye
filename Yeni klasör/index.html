@@ -4,6 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
+    <!-- SEO Meta Etiketleri -->
+    <title>Anadolu Yakası Gece Kurye | 7/24 Nöbetçi Motorlu Kurye</title>
+    <meta name="description" content="İstanbul Anadolu Yakası acil gece kurye hizmeti. Kadıköy, Üsküdar, Ümraniye, Maltepe, Pendik ve tüm ilçelerde 90 dakikada güvenli teslimat. Hemen ara!">
+    <meta name="keywords" content="gece kurye, nöbetçi kurye, anadolu yakası kurye, acil motor kurye, gece ilaç kurye, kadıköy gece kurye, pendik kurye">
+    
+    <!-- Schema.org Yapısal Veri -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "CourierService",
+      "name": "Nöbetçi Kurye",
+      "telephone": "+905457692709",
+      "areaServed": "İstanbul Anadolu Yakası",
+      "openingHours": "Mo-Su 00:00-24:00",
+      "priceRange": "₺₺"
+    }
+    </script>
+
     <!-- PWA & Web App Ayarları -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#ff9800">
@@ -12,8 +30,6 @@
     <meta name="apple-mobile-web-app-title" content="Nöbetçi Kurye">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2830/2830312.png">
 
-    <title>Nöbetçi Kurye | Anadolu Yakası Gece Kuryesi</title>
-    
     <!-- Leaflet Harita CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     
@@ -48,6 +64,119 @@
             overflow-x: hidden;
         }
 
+        /* SOL MENÜ & TETİKLEYİCİ */
+        .menu-btn {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            z-index: 10001;
+            background: rgba(24, 25, 28, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            color: #fff;
+            font-size: 1.3rem;
+            width: 42px;
+            height: 42px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+
+        .menu-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 10002;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.3s;
+        }
+
+        .menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100%;
+            background-color: var(--secondary-bg);
+            z-index: 10003;
+            padding: 24px 20px;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.5);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .side-menu.active {
+            transform: translateX(280px);
+        }
+
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding-bottom: 12px;
+        }
+
+        .menu-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .menu-links a {
+            color: #ddd;
+            text-decoration: none;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* TEMA SEÇİCİ */
+        .theme-switch-box {
+            margin-top: auto;
+            background: var(--card-bg);
+            padding: 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .theme-options {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .theme-btn {
+            flex: 1;
+            padding: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: #111;
+            color: #aaa;
+            cursor: pointer;
+        }
+
+        .theme-btn.active {
+            background: var(--primary-color);
+            color: #000;
+            border-color: var(--primary-color);
+        }
+
         /* HERO BÖLÜMÜ */
         .hero {
             position: relative;
@@ -57,7 +186,7 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            padding: 40px 20px 20px;
+            padding: 50px 20px 20px;
             background: linear-gradient(rgba(15, 16, 18, 0.72), rgba(15, 16, 18, 0.88)), 
                         url('https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
             border-bottom: 2px solid rgba(255, 152, 0, 0.3);
@@ -95,7 +224,6 @@
             max-width: 580px;
         }
 
-        /* Hizmet Tanım Rozetleri */
         .hero-features {
             display: flex;
             flex-wrap: wrap;
@@ -115,7 +243,6 @@
             color: #e0e0e0;
         }
 
-        /* Aksiyon Butonları */
         .action-buttons {
             display: flex;
             gap: 12px;
@@ -153,7 +280,6 @@
             background-color: var(--phone-blue);
         }
 
-        /* Aşağı Kaydır İpucu */
         .scroll-indicator {
             margin-top: 25px;
             display: flex;
@@ -230,6 +356,37 @@
             padding: 10px;
             border-radius: 6px;
             text-align: center;
+        }
+
+        /* HİZMET BÖLGELERİ & SEO METNİ */
+        .seo-services-box {
+            background-color: var(--secondary-bg);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 40px;
+        }
+
+        .seo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 15px;
+        }
+
+        .seo-item {
+            background-color: var(--card-bg);
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: #ccc;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .seo-item strong {
+            color: #fff;
+            display: block;
+            margin-bottom: 4px;
         }
 
         /* GOOGLE YORUMLAR BÖLÜMÜ */
@@ -332,7 +489,7 @@
             font-size: 0.9rem;
         }
 
-        /* GİRİŞTE ÇIKAN PWA PROMPT BARI */
+        /* PWA PROMPT */
         .pwa-toast {
             position: fixed;
             bottom: 20px;
@@ -418,6 +575,36 @@
 </head>
 <body>
 
+    <!-- Sol Üst Açılır Menü Butonu -->
+    <button class="menu-btn" onclick="toggleMenu()" aria-label="Menüyü Aç">☰</button>
+
+    <!-- Menü Karartma Katmanı -->
+    <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
+
+    <!-- Yan Menü Çekmecesi -->
+    <nav class="side-menu" id="sideMenu">
+        <div class="menu-header">
+            <strong style="color: var(--primary-color); font-size: 1.1rem;">Nöbetçi Kurye</strong>
+            <span onclick="toggleMenu()" style="cursor: pointer; font-size: 1.3rem; color: #888;">✕</span>
+        </div>
+
+        <ul class="menu-links">
+            <li><a href="#calculator-section" onclick="toggleMenu()">📍 Canlı Fiyat Hesapla</a></li>
+            <li><a href="#coverage-section" onclick="toggleMenu()">🏙️ Hizmet Bölgeleri</a></li>
+            <li><a href="tel:+905457692709">📞 Hemen Ara</a></li>
+            <li><a href="https://wa.me/905457692709" target="_blank">💬 WhatsApp Destek</a></li>
+        </ul>
+
+        <!-- Harita Görünüm Seçici -->
+        <div class="theme-switch-box">
+            <span style="font-size: 0.85rem; color: #ccc;">🗺️ Harita Görünümü:</span>
+            <div class="theme-options">
+                <button type="button" class="theme-btn" id="btnThemeLight" onclick="setMapTheme('light')">☀️ Açık</button>
+                <button type="button" class="theme-btn active" id="btnThemeDark" onclick="setMapTheme('dark')">🌙 Koyu</button>
+            </div>
+        </div>
+    </nav>
+
     <!-- Hero Bölümü -->
     <header class="hero">
         <div class="badge-guarantee">
@@ -430,7 +617,6 @@
             Gece saatlerinde acil evrak, medikal malzeme, anahtar ve paketleriniz beklemeden, güvenle adresine ulaşır.
         </p>
 
-        <!-- Akıcı şekilde entegre edilmiş iş tanımları -->
         <div class="hero-features">
             <div class="hero-feature-item">📍 Tüm Anadolu Yakası Rotası</div>
             <div class="hero-feature-item">🛡️ Doğrudan & Güvenli Teslimat</div>
@@ -467,6 +653,27 @@
 
             <div class="pricing-notice">
                 ⚠️ <strong>Bilgilendirme:</strong> Hesaplanan tutarlar tahmini gece tarifesidir. Rota koşullarına ve köprü/geçiş durumlarına göre değişkenlik gösterebilir. Net tutar için lütfen iletişime geçin.
+            </div>
+        </section>
+
+        <!-- SEO ve Hizmet Bölgesi Bilgilendirmesi -->
+        <section class="seo-services-box" id="coverage-section">
+            <h2 class="section-title">Anadolu Yakası Gece Kurye Hizmetleri</h2>
+            <p class="section-subtitle">Tüm ilçelerde gece boyu kesintisiz motorlu kurye taşımacılığı</p>
+            
+            <div class="seo-grid">
+                <div class="seo-item">
+                    <strong>Kadıköy - Üsküdar - Ataşehir</strong>
+                    Gece saatlerinde acil evrak, sözleşme, unutanlar için yedek anahtar ve paket teslimatları.
+                </div>
+                <div class="seo-item">
+                    <strong>Ümraniye - Çekmeköy - Sancaktepe</strong>
+                    Nöbetçi eczanelerden acil medikal ürün ve kurumsal depo/şube transferleri.
+                </div>
+                <div class="seo-item">
+                    <strong>Maltepe - Kartal - Pendik - Tuzla</strong>
+                    E-5 ve sahil hattı boyunca 45-90 dakika içinde doğrudan adrese ekspres teslimat.
+                </div>
             </div>
         </section>
 
@@ -564,6 +771,12 @@
             document.getElementById('calculator-section').scrollIntoView({ behavior: 'smooth' });
         }
 
+        // MENÜ KONTROLÜ
+        function toggleMenu() {
+            document.getElementById('sideMenu').classList.toggle('active');
+            document.getElementById('menuOverlay').classList.toggle('active');
+        }
+
         // PWA GİRİŞTE TETİKLEME KONTROLÜ
         let deferredPrompt = null;
         const toast = document.getElementById('pwaToast');
@@ -583,7 +796,6 @@
         });
 
         window.addEventListener('DOMContentLoaded', () => {
-            // Zaten kuruluysa veya son 24 saatte reddedildiyse sorma
             const dismissed = localStorage.getItem('pwa_prompt_dismissed');
             if (isStandalone() || dismissed) return;
 
@@ -619,19 +831,54 @@
 
         function dismissPWA() {
             toast.classList.remove('show');
-            // Kullanıcıyı sürekli darlamamak için tercihi sakla
             localStorage.setItem('pwa_prompt_dismissed', 'true');
         }
 
-        // HARİTA YÖNETİMİ
+        // HARİTA VE TEMA KATMANLARI
         const map = L.map('map').setView([40.9950, 29.1150], 11);
         
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        const darkTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
             attribution: '&copy; OpenStreetMap &copy; CARTO',
             subdomains: 'abcd',
             maxZoom: 19
-        }).addTo(map);
+        });
 
+        const lightTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap &copy; CARTO',
+            subdomains: 'abcd',
+            maxZoom: 19
+        });
+
+        let currentTheme = localStorage.getItem('map_theme') || 'dark';
+        if (currentTheme === 'light') {
+            lightTiles.addTo(map);
+        } else {
+            darkTiles.addTo(map);
+        }
+        updateThemeButtons(currentTheme);
+
+        function setMapTheme(theme) {
+            if (theme === 'light') {
+                map.removeLayer(darkTiles);
+                lightTiles.addTo(map);
+            } else {
+                map.removeLayer(lightTiles);
+                darkTiles.addTo(map);
+            }
+            localStorage.setItem('map_theme', theme);
+            updateThemeButtons(theme);
+        }
+
+        function updateThemeButtons(theme) {
+            const btnLight = document.getElementById('btnThemeLight');
+            const btnDark = document.getElementById('btnThemeDark');
+            if (btnLight && btnDark) {
+                btnLight.classList.toggle('active', theme === 'light');
+                btnDark.classList.toggle('active', theme === 'dark');
+            }
+        }
+
+        // HESAPLAMA MANTIĞI
         let originMarker = null;
         let destMarker = null;
 
